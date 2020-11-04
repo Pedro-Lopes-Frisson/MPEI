@@ -20,10 +20,10 @@ p2  = experiencias < 0.005;         % peças p2 com defeito
 experiencias = rand(n,N);           % processo de montagem pa
 pa  = experiencias < 0.01;          % defeitos na montagem pa com defeito
 ndefeitos = p1 + p2 + pa;           % numero de defeitos por brinquedo
-defeitos = ndefeitos > 0;           % brinquedos com defeito  
+defeitos = ndefeitos > 0;           % brinquedos com defeito
 nbrinquedos = sum(defeitos);        % numero de brinquedos com defeito
 caixas = nbrinquedos >1;            % soma das caixas com pelo menos um brinquedo com defeito
-probSimulacao= sum(caixas)/N        %calculo da probabilidade do acontecimento
+aprobSimulacao= sum(caixas)/N        %calculo da probabilidade do acontecimento
 %% 
 % (b) Estime por simulação do numero médio de brinquedos defeituosos apenas 
 % devido ao processo de montagem quando ocorre o evento A.
@@ -38,6 +38,8 @@ experiencias = rand(n,N);           % processo de montagem pa
 pa  = experiencias < 0.01;          % defeitos na montagem pa com defeito
 ndefeitos = p1 + p2 + pa;           % numero de defeitos por brinquedo
 defeitos = ndefeitos > 0;           % brinquedos com defeito  
-nbrinquedos = sum(defeitos);        % numero de brinquedos com defeito
-caixas = nbrinquedos >1;            % soma das caixas com pelo menos um brinquedo com defeito
-probSimulacao= sum(caixas)/N        %calculo da probabilidade do acontecimento
+todosdef = sum(sum(defeitos));      % soma de todos os brinquedos defeitoosos 
+defeitos = defeitos + pa;           % calculos dos brinquedos com defeito de montagem
+mdefeitos = defeitos > 1;           % filtração dos brinquedos com defeito de montagem
+nmdefeitos = sum(sum(mdefeitos));   % numero de brinquedos com o defeito de montagem
+med = nmdefeitos/todosdef           % numero médio de brinquedos defeituosos apenas devido ao processo de montagem quando ocorre o evento A
