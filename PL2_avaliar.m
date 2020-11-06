@@ -157,27 +157,18 @@ probB                                                   % probabilidade de não 
 px(1)                                                   % probabilidade obtida por simulação de não existirem brinquedos defeitoosos numa caixa com n brinquedos
 % (b) Based on pX(x), compute the probability of X >= 2. 
 
-px2 = 0;                                                % probabilidade obtida por simulação de existirem >= 2 brinquedos defeitoosos numa caixa com n brinquedos
-for i = 3:9                                             % iteração das probabilidades de sairem 2 a 8 brinquedos defeitoosos por caixa com n brinquedos
-    px2 = px2 + px(i);                                  % soma das probabilidades de sairem 2 a 8 brinquedos defeitoosos por caixa com n brinquedos
-end                                                     %
+px2 = sum(px(3:9));                                     % probabilidade obtida por simulação de existirem >= 2 brinquedos defeitoosos numa caixa com n brinquedos, soma das probabilidades de sairem 2 a 8 brinquedos defeitoosos por caixa com n brinquedos
 px2                                                     % observação do resultado
 % What do you conclude?
 % 
 % (c) Based on pX(x), estimate the expected value, variance and standard deviation of X.
 % Expected value
 
-E = 0;                                                  % valor esperado
-for i = xi                                              % iteração pelo conjunto dos valores possiveis de serem assumidos
-    E = E + i*px(i+1);                                  % tem-se que o valor esperado seja igual ao somatório de xi*p(xi)
-end                                                     %
+E = sum(xi .* px)                                       % valor esperado, tem-se que o valor esperado seja igual ao somatório de xi*p(xi)
 E                                                       % observação do valor esperado
 % Variance
 
-var = 0;                                                % variancia
-for i = xi                                              % iteração pelo conjunto dos valores possiveis de serem assumidos
-    var = var + ((i-E)*(i-E)*px(i+1));                  % tem-se que o valor da variancia seja igual ao somatório de ((xi-E(X))^2)*p(xi) 
-end                                                     %
+var = sum((xi - E) .^2 .* px)                           % variancia, tem-se que o valor da variancia seja igual ao somatório de ((xi-E(X))^2)*p(xi) 
 var                                                     % observação da variancia
 % Standard deviation
 
@@ -239,19 +230,24 @@ px2                                                     % observação do result
 % (c) Based on pX(x), estimate the expected value, variance and standard deviation of X.
 % Expected value
 
-E = 0;                                                  % valor esperado
-for i = xi                                              % iteração pelo conjunto dos valores possiveis de serem assumidos
-    E = E + i*px(i+1);                                  % tem-se que o valor esperado seja igual ao somatório de xi*p(xi)
-end                                                     %
+E = sum(xi .* px)                                       % valor esperado, tem-se que o valor esperado seja igual ao somatório de xi*p(xi)
 E                                                       % observação do valor esperado
 % Variance
 
-var = 0;                                                % variancia
-for i = xi                                              % iteração pelo conjunto dos valores possiveis de serem assumidos
-    var = var + ((i-E)*(i-E)*px(i+1));                  % tem-se que o valor da variancia seja igual ao somatório de ((xi-E(X))^2)*p(xi) 
-end                                                     %
+var = sum((xi - E) .^2 .* px)                           % variancia, tem-se que o valor da variancia seja igual ao somatório de ((xi-E(X))^2)*p(xi) 
 var                                                     % observação da variancia
 % Standard deviation
 
 devi = sqrt(var);                                       % desvio padrão, este é calculado fazendo a raiz quadrada da variancia
 devi                                                    % observação do desvio padrão
+% 4. (Evaluation weight = 20%) Assume now that the company aims to commercialize the toys in boxes of n = 20 toys guaranteeing that the probability of commercializing a box without defective toys is at least 90%. 
+% To reach this goal, the assembly process was improved by reducing pa to 0.1% and a quality assurance process was implemented as follow: a sample of m toys (with 1 ≤ m < 20) is selected from each box for testing; the box is not commercialized if at least one of the selected toys is defective or is commercialized, otherwise.
+% (a) Estimate by simulation the probability of a box being commercialized when the quality assurance process is set with m = 1 (check the usefulness of Matlab function randperm in the implementation of the simulation). 
+
+
+% What do you conclude?
+% 
+% (b) Estimate by simulation the lowest value of m that is required to reach the desired goal.
+
+
+%
