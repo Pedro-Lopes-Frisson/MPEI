@@ -279,7 +279,8 @@ experiencias = rand(n,N);                               % processo de montagem p
 pa  = experiencias < 0.001;                             % defeitos na montagem pa com defeito
 ndefeitos = p1 + p2 + pa;                               % numero de defeitos por brinquedo
 defeitos = ndefeitos > 0;                               % brinquedos com defeito
-for m = 1:M                                             % numero de amostras retiradas por caixa
+caixas = sum(defeitos)>0;                               % caixas defeitoosas
+for m = 1: M                                            % numero de amostras retiradas por caixa
     amostras = zeros(1,N);                              % amostras
     ord = randperm(19);                                 % ordem random de retirada das m amostras
     for i = 1:m                                         % iteração pelo numero de amostras a retirar por caixa
@@ -287,10 +288,11 @@ for m = 1:M                                             % numero de amostras ret
             amostras(c)=amostras(c)+defeitos(ord(i),c); % retiro de uma amostra random por caixa e guardar seu valor
         end                                             %
     end                                                 %
-    amostras = amostras > 0;                            % caixas com pelo menos um brinquedo com defeito
-    prob = 1 - (sum(amostras)/N);                       % probabilidade das caixas serem comercializadas
-    if prob < 90/100                                    % verificação se a probabilidade de comercialização da caixa é pelo menos 90/100 
-        result = m-1                                    % valor minimo para garantir que a probabilidade de comercialização da caixa é pelo menos 90/100 
+    amostras = amostras > 0;                            % caixas com pelo menos um brinquedo com defeito apanhadas pelo processo de garantia de qualidade
+    escaparam = caixas - amostras;                      % caixas com defeitos que escaparam ao processo de garantia de qualidade 
+    prob = 1 - (sum(escaparam)/(N-sum(amostras)));      % probabilidade das caixas serem comercializadas sem defeitos
+    if prob >= 90/100                                   % verificação se a probabilidade de comercialização da caixa é pelo menos 90/100 
+        result = m                                      % valor minimo para garantir que a probabilidade de comercialização da caixa é pelo menos 90/100 
         break                                           % 
     end                                                 %
 end                                                     %
