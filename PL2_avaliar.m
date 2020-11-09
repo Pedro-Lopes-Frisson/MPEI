@@ -87,11 +87,11 @@ probtheo
 % (c) Make the necessary simulations to draw a plot graph of the probability of event B as a function of the box capacity n. Consider all values of n from 2 to 20. 
 
 y = (2:20);                                              % probabilidade do acontecimento B em função da capacidade da caixa
+p1 = 0.002;                                              % probabilidade das peças p1 terem defeito
+p2 = 0.005;                                              % probabilidade das peças p2 terem defeito
+pa = 0.01;                                               % probabilidade da montagem ter defeito
 for k =  2:20                                            % (numero de sucessos em n experiências) numero de vezes que um acontecimento A ocorre em n experiências de Bernoulli de 2 a 20
     n =  k;                                              % n experiências de Bernoulli
-    p1 = 0.002;                                          % probabilidade das peças p1 terem defeito
-    p2 = 0.005;                                          % probabilidade das peças p2 terem defeito
-    pa = 0.01;                                           % probabilidade da montagem ter defeito
     p = ((1-p1)*(1-p2)*(1-pa));                          % probabilidade do brinquedo não ter defeito, devido a ser sem defeito quer-se-á a probabilidade ~p1 e ~p2 e ~pa, sendo estes acontecimentos independentes tem-se então k a probabilidade destes acontecimentos acontecerem é igual à multiplicação destes 
     y(k-1) = nchoosek(n,k)*p^k*(1-p)^(n-k);              % y = probabilidade teórica = nchoosek(n,k)*p^k*(1-p)^(n-k) em que nchoosek(n,k)= n!/(n-k)!/k!
 end
@@ -244,10 +244,54 @@ devi                                                    % observação do desvio
 % To reach this goal, the assembly process was improved by reducing pa to 0.1% and a quality assurance process was implemented as follow: a sample of m toys (with 1 ≤ m < 20) is selected from each box for testing; the box is not commercialized if at least one of the selected toys is defective or is commercialized, otherwise.
 % (a) Estimate by simulation the probability of a box being commercialized when the quality assurance process is set with m = 1 (check the usefulness of Matlab function randperm in the implementation of the simulation). 
 
-
+m = 1;                                                  % numero de amostras retiradas por caixa
+N = 1e5;                                                % numero de experiencias
+n = 20;                                                 % numero de brinquedos por caixa
+experiencias = rand(n,N);                               % fabrico de peças p1
+p1  = experiencias < 0.002;                             % peças p1 com defeito
+experiencias = rand(n,N);                               % fabrico de peças p2
+p2  = experiencias < 0.005;                             % peças p2 com defeito
+experiencias = rand(n,N);                               % processo de montagem pa
+pa  = experiencias < 0.001;                             % defeitos na montagem pa com defeito
+ndefeitos = p1 + p2 + pa;                               % numero de defeitos por brinquedo
+defeitos = ndefeitos > 0;                               % brinquedos com defeito
+ord = randperm(19);                                     % ordem random de retirada das m amostras
+amostras = zeros(1,N);                                  % amostras
+for i = 1:m                                             % iteração pelo numero de amostras a retirar por caixa
+    for c = 1:N                                         % iteração pelas caixas
+        amostras(c) = amostras(c) + defeitos(ord(i),c); % retiro de uma amostra random por caixa e guardar seu valor
+    end                                                 %
+end                                                     %
+amostras = amostras > 0;                                % caixas com pelo menos um brinquedo com defeito
+prob = 1 - (sum(amostras)/N)                            % probabilidade das caixas serem comercializadas
 % What do you conclude?
 % 
 % (b) Estimate by simulation the lowest value of m that is required to reach the desired goal.
 
-
+M = 19;                                                 % numero de amostras que poderão ser retirados
+N = 1e5;                                                % numero de experiencias
+n = 20;                                                 % numero de brinquedos por caixa
+experiencias = rand(n,N);                               % fabrico de peças p1
+p1  = experiencias < 0.002;                             % peças p1 com defeito
+experiencias = rand(n,N);                               % fabrico de peças p2
+p2  = experiencias < 0.005;                             % peças p2 com defeito
+experiencias = rand(n,N);                               % processo de montagem pa
+pa  = experiencias < 0.001;                             % defeitos na montagem pa com defeito
+ndefeitos = p1 + p2 + pa;                               % numero de defeitos por brinquedo
+defeitos = ndefeitos > 0;                               % brinquedos com defeito
+for m = 1:M                                             % numero de amostras retiradas por caixa
+    amostras = zeros(1,N);                              % amostras
+    ord = randperm(19);                                 % ordem random de retirada das m amostras
+    for i = 1:m                                         % iteração pelo numero de amostras a retirar por caixa
+        for c = 1:N                                     % iteração pelas caixas
+            amostras(c)=amostras(c)+defeitos(ord(i),c); % retiro de uma amostra random por caixa e guardar seu valor
+        end                                             %
+    end                                                 %
+    amostras = amostras > 0;                            % caixas com pelo menos um brinquedo com defeito
+    prob = 1 - (sum(amostras)/N);                       % probabilidade das caixas serem comercializadas
+    if prob < 90/100                                    % verificação se a probabilidade de comercialização da caixa é pelo menos 90/100 
+        result = m-1                                    % valor minimo para garantir que a probabilidade de comercialização da caixa é pelo menos 90/100 
+        break                                           % 
+    end                                                 %
+end                                                     %
 %
