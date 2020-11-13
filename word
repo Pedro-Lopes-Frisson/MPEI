@@ -107,4 +107,7 @@ plot(2:20,ones(19)*0.9,"k--");
 xlabel ("Capacidade da caixa");
 ylabel ("Probabilidade de B");
 legend ("Probabilidade de B como funçãos da capacidade da caixa n","Probabilidade de 90%");
+  Para a resolução deste exercio foi necessario criar uma matriz linha com capacidade para armazenar as probabilidades do acontecimento B para os diversos valores de n.
+  De forma a que a solução se tornasse mais compacta foi ultizada a formula teorica para a obtencao dos resultados, e atraves de um for loop foi possivel varrer todas as possibilidades de n.
+  Para facilitar a visualização do grafico foram usados diferentes cores e diferentes tipos de linha, sendo que o primeiro plot representa o grafico da probabilidade do acontecimento B em funcao do n.
 }
