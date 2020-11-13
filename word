@@ -1,0 +1,110 @@
+{
+N=1e5;                                                  % numero de experiencias
+n = 8;                                                  % numero de brinquedos por caixa
+experiencias = rand(n,N);                               % fabrico de peças p1
+Componente1  = experiencias < 0.002;                             % peças p1 com defeito
+experiencias = rand(n,N);                               % fabrico de peças p2
+Componente2  = experiencias < 0.005;                             % peças p2 com defeito
+experiencias = rand(n,N);                               % processo de montagem pa
+ProcessoFabrico  = experiencias < 0.01;                              % defeitos na montagem pa com defeito
+BrinquedosComp = p1 + p2 + pa;                               % numero de defeitos por brinquedo
+BrinquedosDefeitos = BrinquedosComp > 0;                               % brinquedos com defeito
+caixas = sum(BrinquedosDefeitos) >=1;                               % soma das caixas com pelo menos um brinquedo com defeito
+probA= sum(caixas)/N                                    % calculo da probabilidade do acontecimento A
+
+ Para simular os processos de fabrico foram efetuadas N experiencias, o número escolhido teve em conta a consistência dos resultados. As matrizes Componente1,Componente2,ProcessoFabrico sao matrizes lógicas em que 0 representa uma peça ou um brinquedo sem defeito e 1 um brinquedo ou componente defeitoso.
+  Uma vez que as 3 probabilidades p1, p2 e pa sao independentes para determinar quantos brinquedos tem defeitos somou-se as três matrizes o que origina uma outra matriz BrinquedosComp que em cada celula i,j pode ter um valor entre 0 e 3, caso o valor seja maior que 0 o brinquedo representado por essa celula apresenta defeito. Sendo que o acontecimento A e a probabilidade de existir pelo menos um brinquedo defeitoso numa determinada caixa foi necessaria comparar a matriz BrinquedosComp para encontrar valores que sejam maiores que 0 após isto e criada uma nova matriz 1xN que representa as N caixas criadas pelo metodo usado atraves da soma coluna a coluna da matriz BrinquedosDefeitos sendo que esta nova matriz apresenta valores entre 0 e 1 dependedo se essa caixa verifica ou nao o acontecimento A, sendo que a soma de todas estas colunas representam os casos favoraveis ao acontecimento A para calcular a probA basta dividir esse valor valore a probabilidade de existir pelo menos um brinquedo defeitoso numa determinada caixa foi necessaria comparar a matriz BrinquedosComp para encontrar valores que sejam maiores que 0 após isto e criada uma nova matriz 1xN que representa as N caixas criadas pelo metodo usado atraves da soma coluna a coluna da matriz BrinquedosDefeitos sendo que esta nova matriz apresenta valores entre 0 e 1 dependedo se essa caixa verifica ou nao o acontecimento A, sendo que a soma de todas estas colunas representam os casos favoraveis ao acontecimento A para calcular a probA basta dividir esse valor valor por N
+}
+{
+
+medias = 0;                                             % definir média para somar médias e veer valor médio das experiencias
+counter = 0;                                            % definir counter para contar caixas com pelo menos 1 defeito
+N=1e5;                                                  % numero de experiencias
+n = 8;                                                  % numero de brinquedos por caixa
+experiencias = rand(n,N);                               % fabrico de peças p1
+p1  = experiencias < 0.002;                             % peças p1 com defeito
+experiencias = rand(n,N);                               % fabrico de peças p2
+p2  = experiencias < 0.005;                             % peças p2 com defeito
+experiencias = rand(n,N);                               % processo de montagem pa
+pa  = experiencias < 0.01;                              % defeitos na montagem pa com defeito
+ndefeitos = p1 + p2 + pa;                               % numero de defeitos por brinquedo
+defeitos = ndefeitos > 0;                               % brinquedos com defeito
+todosdef = sum(defeitos);                               % soma de todos os brinquedos defeitoosos por caixa
+mdefeitos = (p1+p2)>0;                                  % calculo de defeitos provocados por peças
+mdefeitos = (mdefeitos ~= pa) & pa;                     % calculo de defeitos provocados só por montagem
+nmdefeitos = sum(mdefeitos);                            % numero de brinquedos com o defeito só de montagem
+for d = 1:N                                             % for para iteração das matrizes
+    if(todosdef(d) ~=0)                                 % verificação se existe pelo menos 1 brinquedo com defeito por caixa
+        medias= medias + nmdefeitos(d)/todosdef(d);     % soma das médias de brinquedos defeitoosos devido a montagem em comparação aos defeitos totais por caixa
+        counter = counter + 1;                          % contador de casos com pelo menos um defeito por caixa
+    end                                                 %
+end                                                     %
+result = medias/counter                                 % média final das médias obtidas
+  ...........................
+
+  Sendo que o objetivo desta simulação tem por base o acontecimento A algum código foi reaproveitado nomeadamente a geracao das N amostras e das comparações com o objetivo de comprovar que numa determinada caixa c o evento A acontece, contudo sendo necessario determinar quantos brinquedos defeitosos foram causados apenas pelo processo de montagem foi criado uma matriz mdefeitos que resulta na selecao dos brinquedos que nao sao formados por peças defeitosas, sendo estes identificados pelo numero 1.
+  Tendo agora 2 matrizes, todosdef e nmdefeitos, e possivel atraves de um for loop contar quantos brinquedos ficam com defeito após o proccesso de fabrico tendo em conta que o aconcimento A acontece, para isso usa-se uma variavel medias que representa o somatorio deses casos, e outra variacel counter para identificar o numero de vezes que o acontecimento A se concretiza.
+
+}
+{
+% 2. (Evaluation weight = 30%) Consider the event “B – a box of toys has no defective toys”.
+% (a) Estimate by simulation the probability of event B when n = 8 toys.
+
+N=1e5;                                                  % numero de experiencias
+n = 8;                                                  % numero de brinquedos por caixa
+experiencias = rand(n,N);                               % fabrico de peças p1
+p1  = experiencias < 0.002;                             % peças p1 com defeito
+experiencias = rand(n,N);                               % fabrico de peças p2
+p2  = experiencias < 0.005;                             % peças p2 com defeito
+experiencias = rand(n,N);                               % processo de montagem pa
+pa  = experiencias < 0.01;                              % defeitos na montagem pa com defeito
+ndefeitos = p1 + p2 + pa;                               % numero de defeitos por brinquedo
+defeitos = ndefeitos > 0;                               % brinquedos com defeito
+nbrinquedos = sum(defeitos);                            % numero de brinquedos com defeito
+caixas = nbrinquedos ==0;                               % soma das caixas com nenhum brinquedo com nenhum defeito
+probB= sum(caixas)/N                                    % calculo da probabilidade do acontecimento B
+% Check the consistency of this result with the one obtained in question 1(a).
+  Como o evento B e o complementar do acontecimento A, foi seguido o mesmo raciocio que em A contudo agora na matriz caixas o valor logico 1 representa caixas em que nenhum brinquedo contem defeitos;
+  Tal como era de esperar a simulacao de ambos acontecimentos gera probabilidades complementares, 1 - pA = pB, e vice versa.
+}
+{
+
+% (b) Determine the theoretical value of the probability of event B and compare it with the value estimated by simulation in question 2(a).
+
+X = 8;                                                  % (numero de sucessos em n experiências) numero de vezes que um acontecimento A ocorre em
+n = 8;                                                  % n experiências de Bernoulli
+k = X;                                                  % Pr(X=k)
+p1 = 0.002;                                             % probabilidade das peças p1 terem defeito
+p2 = 0.005;                                             % probabilidade das peças p2 terem defeito
+pa = 0.01;                                              % probabilidade da montagem ter defeito
+p = ((1-p1)*(1-p2)*(1-pa));                             % probabilidade do brinquedo não ter defeito, devido a ser sem defeito quer-se-á a probabilidade ~p1 e ~p2 e ~pa, sendo estes acontecimentos independentes tem-se então k a probabilidade destes acontecimentos acontecerem é igual à multiplicação destes
+probtheo = nchoosek(n,k)*p^k*(1-p)^(n-k)                % probabilidade teórica = nchoosek(n,k)*p^k*(1-p)^(n-k) em que nchoosek(n,k)= n!/(n-k)!/k!
+
+  Cada brinquedo pode ser interpretado como uma distribuicao de Bernoulli pelo que o conjunto de N Brinquedos pode ser interpretado como uma distribuicao Binomial logo para cada brinquedo existem duas possibilidades, ter ou nao defeito, pelo que é possivel estimar a probabilidade do acontecimento B atraves da formula nchoosek(n,k)*p^k*(1-p)^(n-k) em que nchoosek(n,k)= n!/(n-k)!/k!.
+  Uma vez que, tal como referido anteriormente, p1, p2 e pa representao probabilidades de acontecimentos independentes, logo é seguro assumir que P(1.2.a) = p1* p2 * pa; #falta enunciar a conjuncao dos 3 acontecimentos,
+
+% What do you conclude?
+probB
+probtheo
+  Visto que foi usado um número de amostras bastante elevado nao se espera grandes variações na probabilidade por simulação contudo é possivel que a probB, probabilidade por simulacao do acontecimento B, nao seja exatamente igual a probtheo, obtida por uma formula comprovada.
+
+}
+{
+% (c) Make the necessary simulations to draw a plot graph of the probability of event B as a function of the box capacity n. Consider all values of n from 2 to 20.
+
+y = (2:20);                                              % probabilidade do acontecimento B em função da capacidade da caixa
+for k =  2:20                                            % (numero de sucessos em n experiências) numero de vezes que um acontecimento A ocorre em n experiências de Bernoulli de 2 a 20
+    n =  k;                                              % n experiências de Bernoulli
+    p1 = 0.002;                                          % probabilidade das peças p1 terem defeito
+    p2 = 0.005;                                          % probabilidade das peças p2 terem defeito
+    pa = 0.01;                                           % probabilidade da montagem ter defeito
+    p = ((1-p1)*(1-p2)*(1-pa));                          % probabilidade do brinquedo não ter defeito, devido a ser sem defeito quer-se-á a probabilidade ~p1 e ~p2 e ~pa, sendo estes acontecimentos independentes tem-se então k a probabilidade destes acontecimentos acontecerem é igual à multiplicação destes
+    y(k-1) = nchoosek(n,k)*p^k*(1-p)^(n-k);              % y = probabilidade teórica = nchoosek(n,k)*p^k*(1-p)^(n-k) em que nchoosek(n,k)= n!/(n-k)!/k!
+end
+hold on;
+plot(2:20,y,"r.-");
+plot(2:20,ones(19)*0.9,"k--");
+xlabel ("Capacidade da caixa");
+ylabel ("Probabilidade de B");
+legend ("Probabilidade de B como funçãos da capacidade da caixa n","Probabilidade de 90%");
+}
