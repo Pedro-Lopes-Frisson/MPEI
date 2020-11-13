@@ -84,6 +84,7 @@ probtheo
 %% 
 % Pode-se concluir assim que as probabilidades obtidas por simulação e teoricamente 
 % são bastante próximas
+%% Teoricamente:
 % (c) Make the necessary simulations to draw a plot graph of the probability of event B as a function of the box capacity n. Consider all values of n from 2 to 20. 
 
 y = (2:20);                                              % probabilidade do acontecimento B em função da capacidade da caixa
@@ -108,6 +109,39 @@ legend ("Probabilidade de B como funçãos da capacidade da caixa n","Probabilid
 plot(6,0.9,'b*');
 text(6,0.9,"Probabilidade de 90% dos brinquedos não terem defeito")
 hold off;
+%% Por simulação :
+% (c) Make the necessary simulations to draw a plot graph of the probability of event B as a function of the box capacity n. Consider all values of n from 2 to 20. 
+
+y = (2:20);                                               % probabilidade do acontecimento B em função da capacidade da caixa
+N=1e5;                                                    % numero de experiencias
+for n =  2:20                                             % numero de brinquedos por caixa
+    experiencias = rand(n,N);                             % fabrico de peças p1
+    p1  = experiencias < 0.002;                           % peças p1 com defeito
+    experiencias = rand(n,N);                             % fabrico de peças p2
+    p2  = experiencias < 0.005;                           % peças p2 com defeito
+    experiencias = rand(n,N);                             % processo de montagem pa
+    pa  = experiencias < 0.01;                            % defeitos na montagem pa com defeito
+    ndefeitos = p1 + p2 + pa;                             % numero de defeitos por brinquedo
+    defeitos = ndefeitos > 0;                             % brinquedos com defeito
+    nbrinquedos = sum(defeitos);                          % numero de brinquedos com defeito por caixa
+    caixas = nbrinquedos ==0;                             % soma das caixas sem nenhum brinquedo com defeito
+    y(n-1) = sum(caixas)/N;                               % probabilidade experimental das caixas de n = 2:20 não terem brinquedos defeituosos
+end
+hold on;
+plot(2:20,y,"r.-");
+plot(2:20,ones(19)*0.9,"k--");
+xlabel ("Capacidade da caixa");
+ylabel ("Probabilidade de B");
+legend ("Probabilidade de B como funçãos da capacidade da caixa n","Probabilidade de 90%");
+% Describe and justify the obtained results.
+% 
+% (d) Analysing the plot drawn in the previous question 2(c), what must be the maximum box capacity if the company wants to guarantee that the probability of each box having no defective toys is at least 90%? 
+
+plot(6,0.9,'b*');
+text(6,0.9,"Probabilidade de 90% dos brinquedos não terem defeito")
+hold off;
+%% 
+% 
 % 3. (Evaluation weight = 30%) Consider the random variable X representing the number of defective toys in a box.
 % (a) Estimate by simulation the mass probability function pX(x) of X when n = 8 toys and draw it in a stem graph. 
 
