@@ -242,4 +242,317 @@ for s = [8 6 4 0]
 end
 %% 
 % 
-% 3. (Evaluation weight = 10%) Consider the state transition matrix T of the question 2. Using the words in wordlist-preao-20201103.txt involving only the letters ‘a’, ‘m’, ‘o’ and ‘r’, estimate the probability of the first letter of a word based on the number of words starting on each of these letters. Repeat question 2 assuming these new probabilities for the first letter. Analyse the obtained results and compare them with the previous results. What do you conclude on the efficiency of these word generators when compared with the previous ones? Explain your conclusions!
+% 3. (Evaluation weight = 10%) Consider the state transition matrix T of the question 2. Using the words in wordlist-preao-20201103.txt involving only the letters ‘a’, ‘m’, ‘o’ and ‘r’, estimate the probability of the first letter of a word based on the number of words starting on each of these letters.  
+
+str = extractFileText('wordlist-preao-20201103.txt');
+wrds= convertStringsToChars(split(str))';
+counters = [0 0 0 0];
+count = 0;
+vrfy = '[^roma]';
+for i = 1:length(wrds)
+    if(length(wrds{i})>=1 && (sum(regexp(wrds{i},vrfy))==0))
+        switch (wrds{i}(1))
+            case 'r'
+                counters(1) = counters(1) + 1;
+                count = count + 1;
+            case 'o'
+                counters(2) = counters(2) + 1;
+                count = count + 1;
+            case 'm'
+                counters(3) = counters(3) + 1;
+                count = count + 1;
+            case 'a'
+                counters(4) = counters(4) + 1;
+                count = count + 1;
+        end
+        
+    end
+end
+counters = counters/count;
+fprintf("Probabilidade das palavras começarem por 'r'  é: %f\n\n",counters(1));
+fprintf("Probabilidade das palavras começarem por 'o'  é: %f\n\n",counters(2));
+fprintf("Probabilidade das palavras começarem por 'm'  é: %f\n\n",counters(3));
+fprintf("Probabilidade das palavras começarem por 'a'  é: %f\n\n",counters(4));
+%% 
+% 
+% Repeat question 2 assuming these new probabilities for the first letter. Analyse the obtained results and compare them with the previous results. What do you conclude on the efficiency of these word generators when compared with the previous ones? Explain your conclusions!
+
+% State transition of the problem
+T=[ 0 , 0.3 , 0 , 0.3 , 0 ; 0.3 , 0 , 0.3 , 0.1 , 0 ; 0 , 0.2 , 0 , 0.2 , 0 ; 0.7 , 0 , 0.7 , 0 , 0 ; 0 , 0.5 , 0 , 0.4 , 0];               
+%
+%
+%      1   2   3   4   5
+%    -                 -      
+% 1 |  0  0.3  0  0.3  0 |      1 = r
+% 2 | 0.3  0  0.3 0.1  0 |      2 = o
+% 3 |  0  0.2  0  0.2  0 |      3 = m
+% 4 | 0.7  0  0.7  0   0 |      4 = a
+% 5 |  0  0.5  0  0.4  0 |      5 = .
+%    -                 -   
+
+for s = [8 6 4 0]
+    fprintf("Probabilidade para n = %d\n",s);
+    resultados = {};
+    contadores = [];
+    counter = 0;              % numero de palavras unicas geradas
+    if(s~=0)
+        for i = 1:N
+            start = rand();
+            % starts at 1 (r)
+            if(start<=counters(1))
+                first = 1;
+            end
+
+            % starts at 2 (o)
+            if(counters(1)<start && start<=(counters(1)+counters(2)))
+                first = 2;
+            end
+
+            % starts at 3 (m)
+            if((counters(1)+counters(2))<start && start<=(counters(1)+counters(2)+counters(3)))
+                first = 3;
+            end
+
+            % starts at 4 (a)
+            if((counters(1)+counters(2)+counters(3))<start && start<=((counters(1)+counters(2)+counters(3)+counters(4))))
+                first = 4;
+            end
+            
+            result = stringify(crawl2(T, first, 5,s));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end
+    else
+        for i = 1:N
+            result = stringify(crawl(T, first, 5));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end        
+    end
+    fprintf("Numero de palavras distintas geradas: %d\n",counter);
+    Big = maxk(contadores,5); % top 5 numero de vezes que as palavras se repetem
+    for n = 1:length(Big)
+        temp = resultados((contadores==Big(n)));
+        for m = 1:length(temp)
+            fprintf("Probabilidade de %s é igual a %.2f\n",temp{m},Big(n)/N);
+        end
+    end
+    str = extractFileText('wordlist-preao-20201103.txt');
+    wrds= convertStringsToChars(split(str));
+    counter = 0;
+    for i = 1:length(resultados)
+        if(any(strcmp(wrds,resultados{i})))
+            counter = counter + contadores(i);
+        end
+    end
+    fprintf("Probabilidade de serem palavras Poruguesas validas: %f\n\n",counter/N); 
+end
+%% 
+% 
+% 4. (Evaluation weight = 10%) One of the limitations of the previous random word generators is that they cannot generate words with the sequence ‘rm’, which exist in some Portuguese words (for example, ‘arma’). Consider now the random word generator based on a Markov chain represented by the following state transition diagram: Repeat question 3 for this case and analyse the obtained results. Also, compare them and with the previous results. What do you conclude on the efficiency of these word generators when compared with the previous ones? Explain your conclusions! 
+
+% State transition of the problem
+T=[ 0 , 0.3 , 0 , 0.3 , 0 ; 0.3 , 0 , 0.3 , 0.1 , 0 ; 0.1 , 0.2 , 0 , 0.2 , 0 ; 0.6 , 0 , 0.7 , 0 , 0 ; 0 , 0.5 , 0 , 0.4 , 0];               
+%
+%
+%      1   2   3   4   5
+%    -                 -      
+% 1 |  0  0.3  0  0.3  0 |      1 = r
+% 2 | 0.3  0  0.3 0.1  0 |      2 = o
+% 3 | 0.1 0.2  0  0.2  0 |      3 = m
+% 4 | 0.6  0  0.7  0   0 |      4 = a
+% 5 |  0  0.5  0  0.4  0 |      5 = .
+%    -                 -   
+
+for s = [8 6 4 0]
+    fprintf("Probabilidade para n = %d\n",s);
+    resultados = {};
+    contadores = [];
+    counter = 0;              % numero de palavras unicas geradas
+    if(s~=0)
+        for i = 1:N
+            start = rand();
+            % starts at 1 (r)
+            if(start<=counters(1))
+                first = 1;
+            end
+
+            % starts at 2 (o)
+            if(counters(1)<start && start<=(counters(1)+counters(2)))
+                first = 2;
+            end
+
+            % starts at 3 (m)
+            if((counters(1)+counters(2))<start && start<=(counters(1)+counters(2)+counters(3)))
+                first = 3;
+            end
+
+            % starts at 4 (a)
+            if((counters(1)+counters(2)+counters(3))<start && start<=((counters(1)+counters(2)+counters(3)+counters(4))))
+                first = 4;
+            end
+            
+            result = stringify(crawl2(T, first, 5,s));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end
+    else
+        for i = 1:N
+            result = stringify(crawl(T, first, 5));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end        
+    end
+    fprintf("Numero de palavras distintas geradas: %d\n",counter);
+    Big = maxk(contadores,5); % top 5 numero de vezes que as palavras se repetem
+    for n = 1:length(Big)
+        temp = resultados((contadores==Big(n)));
+        for m = 1:length(temp)
+            fprintf("Probabilidade de %s é igual a %.2f\n",temp{m},Big(n)/N);
+        end
+    end
+    str = extractFileText('wordlist-preao-20201103.txt');
+    wrds= convertStringsToChars(split(str));
+    counter = 0;
+    for i = 1:length(resultados)
+        if(any(strcmp(wrds,resultados{i})))
+            counter = counter + contadores(i);
+        end
+    end
+    fprintf("Probabilidade de serem palavras Poruguesas validas: %f\n\n",counter/N); 
+end
+%% 
+% 
+% 5. (Evaluation weight = 10%) Using the words in wordlist-preao-20201103.txt involving only the letters ‘a’, ‘m’, ‘o’ and ‘r’, estimate the state transition probabilities of matrix T based on the pairs of sequential letters appearing on such words (and the last letters to estimate the transition to state ‘.’).
+
+str = extractFileText('wordlist-preao-20201103.txt');
+wrds= convertStringsToChars(split(str))';
+patterns  = {'ro','ra','rm','or','om','o.','mo','ma','am','ar','ao','a.'};
+cpatterns = [0 0 0 0 0 0 0 0 0 0 0 0];
+vrfy = '[^roma]';
+for i = 1:length(wrds)
+    if(length(wrds{i})>=1 && (sum(regexp(wrds{i},vrfy))==0))
+        if(wrds{i}(length(wrds{i}))=='o')
+            cpatterns(6) = cpatterns(6) + 1;
+        end
+        if(wrds{i}(length(wrds{i}))=='a')
+            cpatterns(12) = cpatterns(12) + 1;
+        end
+        for k = 1:(length(patterns)-1)
+            if(contains(wrds{i},patterns{k}))
+                cpatterns(k) = cpatterns(k) + 1;
+            end
+        end
+    end
+end
+saidas = [1/sum(cpatterns(1:3)) 1/sum(cpatterns(1:3)) 1/sum(cpatterns(1:3)) 1/sum(cpatterns(4:6)) 1/sum(cpatterns(4:6)) 1/sum(cpatterns(4:6)) 1/sum(cpatterns(7:8)) 1/sum(cpatterns(7:8)) 1/sum(cpatterns(9:12)) 1/sum(cpatterns(9:12)) 1/sum(cpatterns(9:12)) 1/sum(cpatterns(9:12))];
+cpatterns = cpatterns.*saidas;
+%  With this estimated state transition matrix T, repeat question 3. Analyse the obtained results and compare them with the previous results. What do you conclude on the efficiency of these word generators when compared with the previous ones? Explain your conclusions!
+
+% State transition of the problem
+T=[ 0 , cpatterns(4) , 0 , cpatterns(10) , 0 ; cpatterns(1) , 0 , cpatterns(7) , cpatterns(11) , 0 ; cpatterns(3) , cpatterns(5) , 0 , cpatterns(9) , 0 ; cpatterns(2) , 0 , cpatterns(8) , 0 , 0 ; 0 , cpatterns(6) , 0 , cpatterns(12) , 0];    
+sum(T); %prof it works
+% 
+%
+%      1   2   3   4   5
+%    -                 -      
+% 1 |  0  or   0  ar   0 |      1 = r
+% 2 | ro   0  mo  ao   0 |      2 = o
+% 3 | rm  om   0  am   0 |      3 = m
+% 4 | ra   0  ma   0   0 |      4 = a
+% 5 |  0  o.   0  a.   0 |      5 = .
+%    -                 -  
+
+for s = [8 6 4 0]
+    fprintf("Probabilidade para n = %d\n",s);
+    resultados = {};
+    contadores = [];
+    counter = 0;              % numero de palavras unicas geradas
+    if(s~=0)
+        for i = 1:N
+            start = rand();
+            % starts at 1 (r)
+            if(start<=counters(1))
+                first = 1;
+            end
+
+            % starts at 2 (o)
+            if(counters(1)<start && start<=(counters(1)+counters(2)))
+                first = 2;
+            end
+
+            % starts at 3 (m)
+            if((counters(1)+counters(2))<start && start<=(counters(1)+counters(2)+counters(3)))
+                first = 3;
+            end
+
+            % starts at 4 (a)
+            if((counters(1)+counters(2)+counters(3))<start && start<=((counters(1)+counters(2)+counters(3)+counters(4))))
+                first = 4;
+            end
+            
+            result = stringify(crawl2(T, first, 5,s));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end
+    else
+        for i = 1:N
+            result = stringify(crawl(T, first, 5));
+            if any(strcmp(resultados,result))
+                index = find(strcmp(result, resultados));
+                contadores(index) = contadores(index) + 1;
+            else
+                counter = counter + 1;
+                resultados{counter} = result;
+                contadores(counter) = 1;
+            end
+        end        
+    end
+    fprintf("Numero de palavras distintas geradas: %d\n",counter);
+    Big = maxk(contadores,5); % top 5 numero de vezes que as palavras se repetem
+    for n = 1:length(Big)
+        temp = resultados((contadores==Big(n)));
+        for m = 1:length(temp)
+            fprintf("Probabilidade de %s é igual a %.2f\n",temp{m},Big(n)/N);
+        end
+    end
+    str = extractFileText('wordlist-preao-20201103.txt');
+    wrds= convertStringsToChars(split(str));
+    counter = 0;
+    for i = 1:length(resultados)
+        if(any(strcmp(wrds,resultados{i})))
+            counter = counter + contadores(i);
+        end
+    end
+    fprintf("Probabilidade de serem palavras Poruguesas validas: %f\n\n",counter/N); 
+end
