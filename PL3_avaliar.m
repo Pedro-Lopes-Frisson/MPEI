@@ -29,10 +29,9 @@ T=[ 0 , 1/4 , 1/3 , 1/3 , 0 ; 1/2 , 0 , 1/3 , 0 , 0 ; 0 , 1/4 , 0 , 1/3 , 0 ; 1/
 % 3 |  0  1/4  0  1/3  0 |      3 = m
 % 4 | 1/2 1/4 1/3  0   0 |      4 = a
 % 5 |  0  1/4  0  1/3  0 |      5 = .
-%    -                 -
-    
+%    -                 -   
 % how to use crawl()
-state = crawl(T, 1, 5);
+state = crawl(T, randi([1,4],1,1), 5);
 result = stringify(state)
 %  
 %     (b) Simulate the generation of 10^5 random words to estimate the list of generated words and the probability of each word. How many different words were generated? 
@@ -42,7 +41,7 @@ resultados = {};
 contadores = [];
 counter = 0;              % numero de palavras unicas geradas
 for i = 1:N
-    result = stringify(crawl(T, 1, 5));
+    result = stringify(crawl(T, randi([1,4],1,1), 5));
     if any(strcmp(resultados,result))
         index = find(strcmp(result, resultados));
         contadores(index) = contadores(index) + 1;
@@ -85,7 +84,7 @@ end
 % pij^(n+m) = Ek pki^n pik^m  todo n,m >=0, todo i,j
 %
 for i = 1:length(tops)
-    prob = 1;
+    prob = 1/4;
     for s = 1:length(tops{i})
         if(s==1)
             switch (tops{i}(s))
@@ -136,7 +135,7 @@ Prob = counter/N
 %     (e) Change your random word generator to consider a new input parameter n representing the maximum word size (in number of letters) of the generated words (i.e., the word generator stops either if it reaches the state ‘.’ or if it reaches n letters).
 
 % how to use crawl2()
-state = crawl2(T, 1, 5, 2);
+state = crawl2(T, randi([1,4],1,1), 5, 2);
 result = stringify(state)
 %  
 %     (f) For n = 8, 6 and 4, simulate the generation of 10^5 random words to estimate the number of generated words and the probability of a generated word being a valid Portuguese word. Compare these results between them and with the results of 1b) and 1d). What do you conclude? Explain your conclusions!
@@ -146,7 +145,7 @@ for s = [8 6 4]
     contadores = [];
     counter = 0;              % numero de palavras unicas geradas
     for i = 1:N
-        result = stringify(crawl2(T, 1, 5,s));
+        result = stringify(crawl2(T, randi([1,4],1,1), 5,s));
         if any(strcmp(resultados,result))
             index = find(strcmp(result, resultados));
             contadores(index) = contadores(index) + 1;
@@ -173,3 +172,5 @@ for s = [8 6 4]
     end
     Prob = counter/N 
 end
+% 2. (Evaluation weight = 10%) Change the state transition matrix T assuming now the transition probabilities defined in the following diagram: 
+% Assume again that the probability of the first letter is the same for all letters. For n = ∞, 8, 6 and 4, simulate the generation of 10^5 random words to estimate the number of different generated words and the probability of a generated word being a valid Portuguese word. Analyse the obtained results and compare them with the previous results. What do you conclude on the efficiency of these word generators when compared with the previous ones? Explain your conclusions!
