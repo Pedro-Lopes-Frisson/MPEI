@@ -56,16 +56,70 @@ end
 % Present the 5 words with the highest estimated probabilities and their probability values.
 
 Big = maxk(contadores,5); % top 5 numero de vezes que as palavras se repetem
+tops = {};
+count=1;
 for n = 1:length(Big)
     temp = resultados((contadores==Big(n)));
     for m = 1:length(temp)
         fprintf("Probabilidade de %s é igual a %.2f\n",temp{m},Big(n)/N);
+        tops{count} = temp{m};
+        count = count + 1;
     end
 end
 %  
 %     (c) Determine the theoretical probabilities of the 5 words presented in the previous question. Compare the theoretical values with the previous estimated values. What do you conclude?
 
-
+%              T 
+%
+%      1   2   3   4   5
+%    -                 -      
+% 1 |  0  1/4 1/3 1/3  0 |      1 = r
+% 2 | 1/2  0  1/3  0   0 |      2 = o
+% 3 |  0  1/4  0  1/3  0 |      3 = m
+% 4 | 1/2 1/4 1/3  0   0 |      4 = a
+% 5 |  0  1/4  0  1/3  0 |      5 = .
+%    -                 -
+%
+% Equações de Chapman-Kolmogorov
+%
+% pij^(n+m) = Ek pki^n pik^m  todo n,m >=0, todo i,j
+%
+for i = 1:length(tops)
+    prob = 1;
+    for s = 1:length(tops{i})
+        if(s==1)
+            switch (tops{i}(s))
+                case 'r'
+                    prev = 1;
+                case 'o'
+                    prev = 2;
+                case 'm'
+                    prev = 3;
+                case 'a'
+                    prev = 4;
+            end
+        else
+            switch (tops{i}(s))
+                case 'r'
+                    prob = prob*T(1,prev);
+                    prev = 1;
+                case 'o'
+                    prob = prob*T(2,prev);
+                    prev = 2;
+                case 'm'
+                    prob = prob*T(3,prev);
+                    prev = 3;
+                case 'a'
+                    prob = prob*T(4,prev);
+                    prev = 4;
+            end            
+        end
+        if(s==length(tops{i}))
+            prob = prob*T(5,prev);
+        end
+    end
+    prob
+end
 %  
 %     (d) Import (from file wordlist-preao-20201103.txt) the list of Portuguese words to a cell array. With this list and the results of the previous question, estimate the probability of the random word generator to generate a valid Portuguese word.
 
